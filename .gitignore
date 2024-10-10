@@ -7,4 +7,5 @@ keys.txt
 pyproject.toml
 setup.py
 dist/
+build/
 collar.egg-info/
