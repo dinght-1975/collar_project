@@ -1,0 +1,78 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Gen T_L, Qwen",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/collar.py",
+            "env": {
+                "OPENAI_API_KEY": "sk-qiivfdhwemymhlwzdhajuhigfdkmyalzmigfdhfweveocomy",
+                "OPENAI_BASE_URL": "https://api.siliconflow.cn/v1",
+                "OPENAI_MODEL_NAME": "Qwen/Qwen2.5-Coder-7B-Instruct",
+                "PROJECT_DIR": "/Users/dinghaitao/vs_projecty/Ticket_Labeler/dserver"
+            },
+            "args": [
+                "/Users/dinghaitao/vs_projecty/Ticket_Labeler/dserver/services/rose_functions.py"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Gen T_L, Deep",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/collar.py",
+            "env": {
+                "OPENAI_API_KEY": "sk-qiivfdhwemymhlwzdhajuhigfdkmyalzmigfdhfweveocomy",
+                "OPENAI_BASE_URL": "https://api.siliconflow.cn/v1",
+                "OPENAI_MODEL_NAME": "deepseek-ai/DeepSeek-V2.5",
+                "PROJECT_DIR": "/Users/dinghaitao/vs_projecty/Ticket_Labeler/dserver"
+            },
+            "args": [
+                "/Users/dinghaitao/vs_projecty/Ticket_Labeler/dserver/kb/kb_rag.py"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Gen Collar, Qwen",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/collar.py",
+            "env": {
+                "OPENAI_API_KEY": "sk-qiivfdhwemymhlwzdhajuhigfdkmyalzmigfdhfweveocomy",
+                "OPENAI_BASE_URL": "https://api.siliconflow.cn/v1",
+                "OPENAI_MODEL_NAME": "Qwen/Qwen2.5-Coder-7B-Instruct",
+            },
+            "args": [
+                
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Gen Collar, Deep",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/collar.py",
+            "env": {
+                "OPENAI_API_KEY": "sk-qiivfdhwemymhlwzdhajuhigfdkmyalzmigfdhfweveocomy",
+                "OPENAI_BASE_URL": "https://api.siliconflow.cn/v1",
+                "OPENAI_MODEL_NAME": "deepseek-ai/DeepSeek-V2.5",
+                "PROJECT_DIR": "${workspaceFolder}"
+            },
+            "args": [
+                "${workspaceFolder}/collar.py"
+            ],
+            "console": "integratedTerminal"
+        },
+    ]
+}

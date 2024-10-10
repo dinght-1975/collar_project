@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+target/
+llm_logs
+**/.DS_Store
+keys.txt
+pyproject.toml
+setup.py
+dist/
+collar.egg-info/
