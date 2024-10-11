@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -239,6 +242,7 @@ public class JParserHelper {
     public static CompilationUnit geCompilationUnit(String file_name) {
         CompilationUnit cu = null;
         try {
+            StaticJavaParser.getParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_18);
             System.out.println(file_name);
             File sourceFile = new File(file_name);
             cu = StaticJavaParser.parse(sourceFile);

@@ -9,6 +9,7 @@ import collar.method_settings as method_st
 from collar.llm import call_llm
 from collar.core.handler.Handler import Handler
 import collar.llm as llm
+from collar import utils
 PROJECT_DIR = os.getenv('PROJECT_DIR')
 
 def extract_xml_info(content, key):
@@ -577,9 +578,11 @@ OPENAI_MODEL_NAME = os.getenv('OPENAI_MODEL_NAME',"deepseek-ai/DeepSeek-V2.5")
                     OPENAI_MODEL_NAME = line.split('=')[1].strip()
     else:
         OPENAI_BASE_URL = os.getenv('OPENAI_BASE_URL', 'https://api.siliconflow.cn/v1')
-        OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+        OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'sk-qiivfdhwemymhlwzdhajuhigfdkmyalzmigfdhfweveocomy')
         OPENAI_MODEL_NAME = os.getenv('OPENAI_MODEL_NAME', 'deepseek-ai/DeepSeek-V2.5')
     if not OPENAI_API_KEY:
+        content = 'OPENAI_BASE_URL=https://api.siliconflow.cn/v1\nOPENAI_API_KEY=\nOPENAI_MODEL_NAME=deepseek-ai/DeepSeek-V2.5\n'
+        utils.write_file_content(cfg_path, content)
         print(f'请配置OPENAI_API_KEY:\n        可以在环境变量里配置OPENAI_BASE_URL，OPENAI_API_KEY，OPENAI_MODEL_NAME。\n        也可以在当前用户的根目录下~/collar.cfg下配置:\n            OPENAI_BASE_URL=\n            OPENAI_API_KEY=\n            OPENAI_MODEL_NAME=\n              ')
         return False
     masked_api_key = OPENAI_API_KEY[:3] + '*' * (len(OPENAI_API_KEY) - 6) + OPENAI_API_KEY[-3:]
@@ -591,21 +594,42 @@ OPENAI_MODEL_NAME = os.getenv('OPENAI_MODEL_NAME',"deepseek-ai/DeepSeek-V2.5")
     llm.OPENAI_MODEL_NAME = OPENAI_MODEL_NAME
     return True
 
-def main():
+def setup_api_key(api_key):
     """-DONE
-主函数接收到命令参数后如下处理:
-1.如果某一个参数以"--"开头，那么保存到optional_args里。
-2.如果参数是一个路径，则调用处理对象的处理方法。
-3.如果没有参数，或者 参数是--help，请打印标准的help信息，指导改如何使用参数。
-4.如果参数不是一个路径，则调用一个chat对象开始处理对话，开启一个交互流程,提示”>“,等待用户从stdin输入"""
+把传入的api_key保存或者更新到cfg_path配置文件中"""
+    cfg_path = os.path.expanduser('~/collar.cfg')
+    if os.path.exists(cfg_path):
+        with open(cfg_path, 'r') as file:
+            content = file.read()
+        content = re.sub('OPENAI_API_KEY=.*', f'OPENAI_API_KEY={api_key}', content)
+        with open(cfg_path, 'w') as file:
+            file.write(content)
+    else:
+        with open(cfg_path, 'w') as file:
+            file.write(f'OPENAI_BASE_URL=https://api.siliconflow.cn/v1\n')
+            file.write(f'OPENAI_API_KEY={api_key}\n')
+            file.write(f'OPENAI_MODEL_NAME=deepseek-ai/DeepSeek-V2.5\n')
+    print(f"OPENAI_API_KEY已经被更新到配置文件{cfg_path}")
+
+def main():
+    """"""
     str_usage = f"Usage: python script.py [--option] [target]')\n    Options:\n        --force: 强制对于模块，类，方法不完整的部分，进行补全。比如一个函数，如果没有Doc，则自动生成Doc,不论是否设置了Action\n    targe: \n        可以是一个目录，Collar会处理目录下（包括子目录）的所有文件\n        可以是一个文件，Collar会处理这个文件\n        可以是文件名:方法名:动作要求\n    Action:\n        -DES:当前是一个最初的情况，下一步是生成设计文档\n        -CRE:生成代码实现。\n        -MOD:根据提供的信息，进行代码的修改和优化，信息放在当前方法的文档中，用<info></info>引用起来\n        -DOC:根据目前的文档和代码实现，按照模板来生成文档。\n        -QA:根据文档和当前的代码，进行质量检查，并给出改进建议\n        -TEST:对当前的方法，生成测试用例\n        -RUN:执行测试\n"
-    args=sys.argv[1:]
+    args = sys.argv[1:]
     optional_args = []
     file_args = []
     for arg in args:
         if arg == '--help':
             print(str_usage)
             return
+        elif arg.startswith('-OPENAI_API_KEY'):
+            str_arr = arg.split('=')
+            if len(str_arr) != 2:
+                print('请按正确的参数格式设置API_KEY:\n -OPENAI_API_KEY=xxxxxxx')
+                return
+            else:
+                api_key = str_arr[1]
+                setup_api_key(api_key)
+                return
         if arg.startswith('--'):
             optional_args.append(arg)
         else:
@@ -650,23 +674,18 @@ def walk_files(optional_args, full_path):
     print(f'开始处理目录或文件:{full_path}')
     file_types = check_source_file_type(full_path)
     if len(file_types['java']) > 0:
-        print("要出处理的源文件类型为Java")
+        print('要出处理的源文件类型为Java')
         start_jvm()
     if os.path.isfile(full_path):
         handler = Handler(full_path, optional_args)
         handler.process_file()
     elif os.path.isdir(full_path):
-        # python_files = file_types['python']
-        # for file in python_files:
-        #     handler = Handler(file, optional_args)
-        #     handler.process_file()
         java_files = file_types['java']
         for file in java_files:
             handler = Handler(file, optional_args)
             handler.process_file()
     else:
         print(f'无效的路径: {full_path}')
-
     shut_jvm()
 
 def shut_jvm():
@@ -674,11 +693,11 @@ def shut_jvm():
         jpype.shutdownJVM()
 
 def start_jvm():
-    root_path =  os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    default_java_parser_lib = [os.path.join(root_path,"collar_java","target","classes"),os.path.join(root_path,"collar_java","target","java_d2c-1.0-SNAPSHOT.jar")]
+    root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    default_java_parser_lib = [os.path.join(root_path, 'collar_java', 'target', 'classes'), os.path.join(root_path, 'collar_java', 'target', 'java_d2c-1.0-SNAPSHOT.jar')]
     if not jpype.isJVMStarted():
         jpype.startJVM(classpath=default_java_parser_lib)
-        print(f"JVM 装载完成:{default_java_parser_lib}")
+        print(f'JVM 装载完成:{default_java_parser_lib}')
 
 def test_function():
     """-DONE

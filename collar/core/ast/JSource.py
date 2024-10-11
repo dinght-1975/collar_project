@@ -32,6 +32,8 @@ class JSource(Source):
                   error message:{e}""")
             self.cu = None
             return False
+        if self.cu == None:
+            return False
         cu = self.cu
         if cu.getPackageDeclaration().isPresent():
             packageName = cu.getPackageDeclaration().get().getNameAsString()
@@ -170,6 +172,10 @@ class JClassDef(ClassDef):
                 self.delca_type = 'class'
         elif delca_type == "<java object 'com.github.javaparser.ast.body.AnnotationDeclaration'>":
             self.delca_type = 'annotation'
+        elif delca_type == "<java class 'com.github.javaparser.ast.body.EnumDeclaration'>":
+            self.delca_type = 'enum'
+        else:
+            self.delca_type = ''
         super().build()
         self.full_name = self.source.module_name + '.' + self.name
         self.build_signature()

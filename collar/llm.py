@@ -1,13 +1,11 @@
 import time
 import os
 from openai import OpenAI
-
+from collar.system_settings import SYSTEM_MESSAGE
 
 OPENAI_BASE_URL = ""
 OPENAI_API_KEY = ""
 OPENAI_MODEL_NAME = ""
-
-
 
 def save_prompt(method, prompt):
     '''DF
@@ -42,15 +40,14 @@ def save_response(method, response):
 
 
 def call_llm(method, prompt):
-
-
     save_prompt(method, prompt)
-    str_key = "sk-qiivfdhwemymhlwzdhajuhigfdkmyalzmigfdhfweveocomy"
+    str_key = OPENAI_API_KEY
     client = OpenAI(api_key=str_key, base_url="https://api.siliconflow.cn/v1")
+    start_time=time.time()
     response = client.chat.completions.create(
         model=OPENAI_MODEL_NAME, 
         messages=[{'role': 'system', 
-                   'content': 'You are a helpful coding assistant.'}, 
+                   'content': f"{SYSTEM_MESSAGE}"}, 
                    {'role': 'user', 'content': prompt}],
                    stream=False, 
                    temperature=0, 
@@ -58,6 +55,8 @@ def call_llm(method, prompt):
                    top_p=0.7,
                    frequency_penalty=0.0,
                    presence_penalty=0.0)
+    endtime= time.time()
+    print(f"Call {OPENAI_MODEL_NAME}:{endtime-start_time} seconds")
     content = response.choices[0].message.content.strip()
     save_response(method, content)
     return content

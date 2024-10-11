@@ -1,3 +1,3 @@
-from collar.collar import main
+from collar.main import main
 if __name__ == '__main__':
     main()

@@ -24,6 +24,8 @@ class Handler:
         :param file_path: 文件路径
         """
         if self.file_path.endswith(".java"):
+            if self.file_path == "/Users/dinghaitao/vs_projecty/Install_test/itsm-woms/src/main/java/com/aie/itsm/woms/service/order/impl/OrderInstanceServiceImpl.java":
+                print("yes")
             self.source = JSource(self.file_path)
             if self.source.cu == None:
                 return

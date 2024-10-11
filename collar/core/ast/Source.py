@@ -58,18 +58,21 @@ class Decla(ABC):
             str_doc = str(decla.getJavadocComment().get().toString())
             self.doc_string = remove_c_style_comments(str_doc)
         else:
-            self.doc_string = ""
-            return
             str_body = str(decla.toString())
             str_doc = "";
             indx = str_body.find("/*-")
+            if indx == -1:
+                indx = str_body.find("/**")
             if (indx != -1):
-                strTmp = str_body[indx:];
-            indx = strTmp.finc("*/")
+                strTmp = str_body[indx:]
+            else:
+                self.doc_string = ""
+                return
+            indx = strTmp.find("*/")
             if (indx != -1):
-               str_doc = strTmp[0, indx + 2];
-            self.doc_string = str_doc
-    
+               str_doc = strTmp[:indx + 2];
+            self.doc_string = remove_c_style_comments(str_doc)
+
     def build(self):
         self.build_name()
         self.build_doc_string()
