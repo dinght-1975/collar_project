@@ -63,4 +63,14 @@ collar [源代码文件名|某一个目录|]
            -TEST:对当前的方法，生成测试用例
            -RUN:执行测试
    ```
+## 配置修改  
+要修改的配置主要是~/collar.cfg文件中  
+```java
+OPENAI_BASE_URL=https://api.siliconflow.cn/v1    
+OPENAI_API_KEY=<可以自行到siliconflow注册用户，并生成自己的API KEY>  
+OPENAI_MODEL_NAME=deepseek-ai/DeepSeek-V2.5    
+```
+# Collar的规划
+
+
       
