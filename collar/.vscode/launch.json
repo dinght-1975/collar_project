@@ -19,7 +19,7 @@
             "env": {
                 "OPENAI_API_KEY": "sk-qiivfdhwemymhlwzdhajuhigfdkmyalzmigfdhfweveocomy",
                 "OPENAI_BASE_URL": "https://api.siliconflow.cn/v1",
-                "OPENAI_MODEL_NAME": "Qwen/Qwen2.5-Coder-7B-Instruct",
+                "OPENAI_MODEL_NAME": "Qwen/Qwen2.5-CODEer-7B-Instruct",
                 "PROJECT_DIR": "/Users/dinghaitao/vs_projecty/Ticket_Labeler/dserver"
             },
             "args": [
@@ -51,7 +51,7 @@
             "env": {
                 "OPENAI_API_KEY": "sk-qiivfdhwemymhlwzdhajuhigfdkmyalzmigfdhfweveocomy",
                 "OPENAI_BASE_URL": "https://api.siliconflow.cn/v1",
-                "OPENAI_MODEL_NAME": "Qwen/Qwen2.5-Coder-7B-Instruct",
+                "OPENAI_MODEL_NAME": "Qwen/Qwen2.5-CODEer-7B-Instruct",
             },
             "args": [
                 

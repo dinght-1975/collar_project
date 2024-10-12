@@ -153,7 +153,7 @@ public class JParserHelper {
     }
 
     // Helper method to find method by name and parameters (considering overloading)
-    private static Optional<MethodDeclaration> findMethodBySignature(ClassOrInterfaceDeclaration classDecl, MethodDeclaration newMethod) {
+    public static Optional<MethodDeclaration> findMethodBySignature(ClassOrInterfaceDeclaration classDecl, MethodDeclaration newMethod) {
         return classDecl.getMethodsByName(newMethod.getNameAsString()).stream().filter(existingMethod -> parametersMatch(existingMethod.getParameters(), newMethod.getParameters())).findFirst();
     }
 

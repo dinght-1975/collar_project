@@ -1,18 +1,19 @@
-from JSource import JSource
+from collar.core.ast.JSource import JSource
 import os
 import utils
 class JMapper(JSource):
-    pass
+    
     def replace_method_code(self, method, new_code):
-        if self.is_mapper():
-            return self.update_mapper_xml(new_code)
+            self.update_mapper_xml(new_code)
+            method.remove_action_key_in_design_doc()
+            self.changed  = True
         
     def update_mapper_xml(self, str_code):
         file_name = self.get_mapper_xml_file_name()
         return utils.update_xml_by_element(file_name, str_code, f"{self.full_module_name}") 
     
     def get_mapper_xml_file_name(self):
-        str_package = self.module_name
+        str_package = self.module_path
         str_class_name = self.short_file_name
         arr_strs = str_package.split(".")
         last_node = arr_strs[-1]
@@ -30,7 +31,7 @@ class JMapper(JSource):
             print(f"File {ddl_file_name} doesn't exist.")
             return str_context
         content = utils.read_file_content(ddl_file_name)
-        str_context = f"Mapper XML 的定义:\n{content}"
+        str_context = f"数据库表的定义:\n{content}"
         return str_context
     
     def get_xml_def(self):
@@ -40,7 +41,7 @@ class JMapper(JSource):
             print(f"File {xml_file_name} doesn't exist.")
             return str_context
         content = utils.read_file_content(xml_file_name)
-        str_context = f"数据库表的定义:\n{content}"
+        str_context = f"Mapper xml 的定义:\n{content}"
         return str_context
     
     def get_extra_def(self):

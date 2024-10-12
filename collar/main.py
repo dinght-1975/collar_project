@@ -132,7 +132,7 @@ def build_context_from_import_list(import_list):
     return context
 
 def check_doc_string(doc_string):
-    keywords = ['-CRE', '-DOC', '-DES', '-MOD']
+    keywords = ['-CODE', '-DOC', '-DES', '-MOD']
     for keyword in keywords:
         if doc_string.startswith(keyword + '\n'):
             return True
@@ -389,7 +389,7 @@ class PHandler:
             if not check_doc_string(method_doc):
                 return
             method_doc = ast.get_docstring(node)
-            if method_doc.startswith('-CRE'):
+            if method_doc.startswith('-CODE'):
                 new_code = self.generate_code_with_openai(node)
                 self.replace_code(node, new_code)
             if method_doc.startswith('-MOD'):
@@ -487,8 +487,8 @@ class PHandler:
             method.body.append(body_item)
         docstring_node = ast.get_docstring(method)
         if docstring_node:
-            if docstring_node.startswith('-CRE'):
-                method.body[0].value.value = docstring_node.replace('-CRE', '-DONE', 1)
+            if docstring_node.startswith('-CODE'):
+                method.body[0].value.value = docstring_node.replace('-CODE', '-DONE', 1)
             elif docstring_node.startswith('-MOD'):
                 method.body[0].value.value = docstring_node.replace('-MOD', '-DONE', 1)
         self.changed = True

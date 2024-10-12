@@ -83,7 +83,7 @@ def update_xml_by_element(file_path, new_element_str, namespace):
         print(f"Element with id '{element_id}' not found, so it was added to mapper '{namespace}'.")
 
     # 将修改后的 XML 树写回文件
-    tree.write(file_path[:-3] + "gen", encoding='utf-8', xml_declaration=True)
+    tree.write(file_path, encoding='utf-8', xml_declaration=True)
     return True
 
 def read_file_content(file_path):

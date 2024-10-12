@@ -1,6 +1,7 @@
 
 from collar.core.ast.JSource import JSource
 from collar.core.ast.PSource import PSource
+from collar.core.ast.JMapper import JMapper
 from collar.core.ast import Source as src
 import collar.method_settings as method_st
 import collar.module_setting as module_st
@@ -26,7 +27,10 @@ class Handler:
         if self.file_path.endswith(".java"):
             if self.file_path == "/Users/dinghaitao/vs_projecty/Install_test/itsm-woms/src/main/java/com/aie/itsm/woms/service/order/impl/OrderInstanceServiceImpl.java":
                 print("yes")
-            self.source = JSource(self.file_path)
+            if self.file_path.endswith("Mapper.java"):
+                self.source = JMapper(self.file_path)
+            else:
+                self.source = JSource(self.file_path)
             if self.source.cu == None:
                 return
         elif self.file_path.endswith(".py"):
@@ -54,14 +58,27 @@ class Handler:
     def process_method(self, node):
         action = node.action
         if action:
-            new_code = self.generate_code(node)
+            result = self.generate_code(node)
             if action == "-DOC":
+                new_code = result['text']
                 self.source.replace_method_doc(node, new_code)
+            elif action == "-DES":
+                new_code = result['text']
+                self.source.replace_design_doc(node, new_code)
             else:
+                if "java" in result:
+                    new_code = result['java']
+                elif "python" in result:
+                    new_code = result['python']
+                elif "xml" in result:
+                    new_code = result['xml']
+                else:
+                    new_code = result['text']
                 self.source.replace_code(node, new_code)
         elif '--force_gen_doc' in self.optional_args:
-            new_doc = self.generate_code(node)
-            self.source.replace_method_doc(node, new_doc)
+            result = self.generate_code(node)
+            new_code = result['text']
+            self.source.replace_method_doc(node, new_code)
 
     def generate_code(self, method):
         """
@@ -80,15 +97,15 @@ class Handler:
         action = method.action
         info = extract_xml_info(method_doc, 'info')
         context = self.build_context()
-        if action == '-CRE' or action == '-DES' or action == '-DOC':
+        if action == '-CODE' or action == '-DES' or action == '-DOC':
             prompt = method_st.Prompt[action].format(context=context, method_info=str_method_def)
         elif action == '-MOD':
             prompt = method_st.Prompt[action].format(context=context, method_info=str_method_def, change_info=info)
         else:
             return ''
         content = call_llm(method, prompt)
-        content = extract_code_from_string(content)
-        return content
+        result = extract_code_from_string(content)
+        return result
 
 
     def build_context(self):
@@ -126,15 +143,20 @@ def extract_code_from_string(input_string):
     :param input_string: 输入的字符串
     :return: 抽取出的代码块
     """
-    patterns = ['```python\\n(.*?)```',
-                '```java\\n(.*?)```',
-                '```plaintext\\n(.*?)```',
-    ]
-    for p in patterns:
+    patterns = {'python':'```python\\n(.*?)```',
+                'java':'```java\\n(.*?)```',
+                'text':'```plaintext\\n(.*?)```',
+                 'xml':'```xml\\n(.*?)```'
+    }
+    result={}
+    for k in patterns.keys():
+        p = patterns[k]
         match = re.search(p, input_string, re.DOTALL)
         if match:
-            return match.group(1).strip()
-    return input_string
+            result[k] = match.group(1).strip()
+    if len(result)==0:
+        result['text'] = input_string
+    return result
         
 def read_def_from_module_file(file_name):
     if file_name.endswith(".java"):
